@@ -49,7 +49,7 @@ SSH into your VPS, then run:
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/vps-uploader /opt/uploader
+git clone https://github.com/CryptoPilot16/vps-uploader /opt/uploader
 cd /opt/uploader
 
 # Install dependencies
