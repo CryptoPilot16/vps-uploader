@@ -26,6 +26,9 @@ nano ecosystem.config.js
 mkdir -p /opt/uploader/inbox
 pm2 start ecosystem.config.js
 pm2 save
+
+# To apply env changes after editing ecosystem.config.js:
+# pm2 delete vps-uploader && pm2 start ecosystem.config.js && pm2 save
 ```
 
 ## Commands
