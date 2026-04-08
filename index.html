@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uploader — VPS File Bot</title>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --surface: #111111;
+      --border: #1e1e1e;
+      --border-bright: #2a2a2a;
+      --text: #e2e2e2;
+      --muted: #555;
+      --accent: #26A5E4;
+      --accent-dim: #1a6fa3;
+      --green: #3dd68c;
+      --yellow: #f5c842;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* NAV */
+    nav {
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(13,13,13,0.92);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-logo .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .nav-links a { color: var(--muted); }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* HERO */
+    .hero {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 2rem 3rem;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      border: 1px solid var(--accent-dim);
+      border-radius: 99px;
+      padding: 4px 12px;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+    }
+
+    h1 span { color: var(--accent); }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: #888;
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .btn:hover { opacity: 0.85; transform: translateY(-1px); text-decoration: none; }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border-bright);
+    }
+
+    /* DEMO TERMINAL */
+    .terminal-wrap {
+      max-width: 700px;
+      margin: 4rem auto 0;
+      padding: 0 2rem;
+    }
+
+    .terminal {
+      background: #0a0a0a;
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .terminal-bar {
+      background: #161616;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .terminal-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+    }
+
+    .t-red   { background: #ff5f57; }
+    .t-yellow{ background: #febc2e; }
+    .t-green { background: #28c840; }
+
+    .terminal-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: auto;
+      margin-right: auto;
+      transform: translateX(-20px);
+    }
+
+    .terminal-body {
+      padding: 1.4rem 1.6rem;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    .t-prompt { color: var(--green); }
+    .t-cmd    { color: var(--text); }
+    .t-out    { color: #666; }
+    .t-path   { color: var(--accent); }
+    .t-comment{ color: #3a3a3a; }
+
+    /* HOW IT WORKS */
+    .section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-sub {
+      color: #666;
+      margin-bottom: 3rem;
+      max-width: 480px;
+    }
+
+    /* FLOW */
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .flow-step {
+      background: var(--surface);
+      padding: 1.6rem 1.4rem;
+    }
+
+    .flow-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .flow-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .flow-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .flow-desc {
+      font-size: 0.78rem;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    /* FILE TYPES */
+    .filetypes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+    }
+
+    .filetype-tag {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 5px;
+      background: #151515;
+      border: 1px solid var(--border-bright);
+      color: #aaa;
+    }
+
+    /* INSTALL STEPS */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 1.2rem;
+      align-items: start;
+    }
+
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #151515;
+      border: 1px solid var(--border-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-content h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-content p {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 0.8rem;
+      line-height: 1.6;
+    }
+
+    pre {
+      background: #0a0a0a;
+      border: 1px solid var(--border-bright);
+      border-radius: 6px;
+      padding: 1rem 1.2rem;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.8;
+      overflow-x: auto;
+      color: #ccc;
+    }
+
+    pre .cm { color: #333; }
+    pre .kw { color: var(--accent); }
+    pre .st { color: var(--green); }
+
+    /* COMMANDS TABLE */
+    .cmd-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .cmd-table th {
+      text-align: left;
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cmd-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .cmd-table tr:last-child td { border-bottom: none; }
+
+    .cmd-table tr:hover td { background: #111; }
+
+    .cmd {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .cmd-desc { color: #777; }
+
+    /* DIVIDER */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    footer a { color: #444; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 600px) {
+      .hero { padding: 3rem 1.2rem 2rem; }
+      .section { padding: 3rem 1.2rem; }
+      .flow { grid-template-columns: 1fr 1fr; }
+      nav { padding: 0 1.2rem; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="dot"></span>
+    uploader
+  </div>
+  <div class="nav-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#install">Install</a>
+    <a href="#commands">Commands</a>
+    <a href="https://github.com/CryptoPilot16/vps-uploader" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="5" fill="#26A5E4"/></svg>
+    Telegram · Node.js · pm2
+  </div>
+  <h1>Drop a file.<br><span>Get the path.</span></h1>
+  <p class="hero-sub">
+    A lightweight Telegram bot that receives any file from your phone and saves it directly to your VPS — replying with the exact path ready to paste.
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#install">Get Started</a>
+    <a class="btn btn-ghost" href="https://github.com/CryptoPilot16/vps-uploader" target="_blank">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      View on GitHub
+    </a>
+  </div>
+</section>
+
+<!-- TERMINAL DEMO -->
+<div class="terminal-wrap">
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-dot t-red"></div>
+      <div class="terminal-dot t-yellow"></div>
+      <div class="terminal-dot t-green"></div>
+      <div class="terminal-title">uploader — bot session</div>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-comment"># You send a screenshot from your phone via Telegram</span></div>
+      <div><span class="t-comment"># Bot instantly replies:</span></div>
+      <br>
+      <div><span class="t-out">📂 Saved →</span> <span class="t-path">`/opt/uploader/inbox/2026-04-08T12-30-45_photo.jpg`</span></div>
+      <br>
+      <div><span class="t-comment"># Paste straight into Claude Code or your terminal</span></div>
+      <div><span class="t-prompt">$</span> <span class="t-cmd">cat /opt/uploader/inbox/2026-04-08T12-30-45_photo.jpg | claude</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="section-label">Overview</div>
+  <div class="section-title">How it works</div>
+  <p class="section-sub">Four steps from phone to path — no cloud storage, no web UI, just your VPS.</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="flow-num">01</div>
+      <div class="flow-icon">📱</div>
+      <div class="flow-title">Send from phone</div>
+      <div class="flow-desc">Drop any file into the bot chat on Telegram</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">02</div>
+      <div class="flow-icon">⬇️</div>
+      <div class="flow-title">Bot downloads it</div>
+      <div class="flow-desc">File is pulled from Telegram's servers directly to your VPS</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">03</div>
+      <div class="flow-icon">💾</div>
+      <div class="flow-title">Saved with timestamp</div>
+      <div class="flow-desc">Stored in <code style="font-size:11px;color:#aaa">/opt/uploader/inbox/</code> with a timestamped filename</div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">04</div>
+      <div class="flow-icon">📋</div>
+      <div class="flow-title">Path sent back</div>
+      <div class="flow-desc">Bot replies with the full path — tap to copy, paste into terminal</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 3rem;">
+    <div class="section-label" style="margin-bottom:1rem;">Supported file types</div>
+    <div class="filetypes">
+      <span class="filetype-tag">📷 Photos</span>
+      <span class="filetype-tag">📄 Documents</span>
+      <span class="filetype-tag">🎬 Videos</span>
+      <span class="filetype-tag">🎙 Voice / Audio</span>
+      <span class="filetype-tag">🗜 ZIP / Archives</span>
+      <span class="filetype-tag">📦 Any format</span>
+    </div>
+    <p style="font-size:12px;color:#444;margin-top:1rem;font-family:var(--mono)">⚠ Telegram Bot API file size limit: 20 MB</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- INSTALL -->
+<section class="section" id="install">
+  <div class="section-label">Setup</div>
+  <div class="section-title">Install in 5 steps</div>
+  <p class="section-sub">Requires Node.js 18+ and a VPS. Takes about 5 minutes.</p>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Install prerequisites</h3>
+        <p>Make sure Node.js 18+ is installed, then install pm2 globally.</p>
+        <pre><span class="cm"># Check Node version</span>
+node -v
+
+<span class="cm"># Install pm2</span>
+npm install -g pm2</pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Create a Telegram bot</h3>
+        <p>Open Telegram, message <strong>@BotFather</strong>, send <code>/newbot</code>, and follow the prompts. Copy the token it gives you.</p>
+        <p>Then message <strong>@userinfobot</strong> to get your numeric user ID.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Clone and configure</h3>
+        <p>SSH into your VPS and run:</p>
+        <pre>git clone https://github.com/CryptoPilot16/vps-uploader /opt/uploader
+cd /opt/uploader
+npm install</pre>
+        <p style="margin-top:0.8rem">Open the config and add your token and user ID:</p>
+        <pre>nano ecosystem.config.js</pre>
+        <pre><span class="cm">// Set these two values:</span>
+<span class="kw">TELEGRAM_BOT_TOKEN</span>: <span class="st">'your-token-here'</span>,
+<span class="kw">ALLOWED_USER_ID</span>:    <span class="st">'your-user-id-here'</span>,</pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Start with pm2</h3>
+        <p>Start the bot and configure it to survive reboots.</p>
+        <pre>pm2 start ecosystem.config.js
+pm2 save
+
+<span class="cm"># Enable auto-start on reboot:</span>
+pm2 startup
+<span class="cm"># Copy and run the command pm2 prints</span>
+pm2 save</pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <h3>Test it</h3>
+        <p>Open Telegram, find your bot, and send it any photo or file. It should reply with a path like:</p>
+        <pre>/opt/uploader/inbox/2026-04-08T12-30-45_photo.jpg</pre>
+        <p style="margin-top:0.8rem">Nothing happened? Check the logs:</p>
+        <pre>pm2 logs uploader</pre>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr>
+
+<!-- COMMANDS -->
+<section class="section" id="commands">
+  <div class="section-label">Reference</div>
+  <div class="section-title">Bot commands</div>
+  <p class="section-sub">All commands are only accessible to your Telegram user ID.</p>
+
+  <table class="cmd-table">
+    <thead>
+      <tr>
+        <th>Command</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="cmd">/help</span></td>
+        <td class="cmd-desc">Show available commands</td>
+      </tr>
+      <tr>
+        <td><span class="cmd">/list</span></td>
+        <td class="cmd-desc">Show the last 10 files saved to inbox</td>
+      </tr>
+      <tr>
+        <td><span class="cmd">/clear</span></td>
+        <td class="cmd-desc">Delete all files in inbox</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:3rem">
+    <div class="section-label" style="margin-bottom:1rem">Useful pm2 commands</div>
+    <pre><span class="cm"># View live logs</span>
+pm2 logs uploader
+
+<span class="cm"># Check status</span>
+pm2 status
+
+<span class="cm"># Restart after config change</span>
+pm2 delete uploader &amp;&amp; pm2 start ecosystem.config.js &amp;&amp; pm2 save</pre>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="https://github.com/CryptoPilot16/vps-uploader" target="_blank">github.com/CryptoPilot16/vps-uploader</a>
+  &nbsp;·&nbsp;
+  MIT License
+</footer>
+
+</body>
+</html>
