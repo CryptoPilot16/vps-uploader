@@ -1,7 +1,7 @@
 {
-  "name": "vps-uploader",
+  "name": "uploader",
   "version": "1.0.0",
-  "description": "Telegram bot that receives images/files and saves them to VPS for terminal use",
+  "description": "Telegram bot that saves files to your VPS and replies with the path.",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js"
