@@ -32,7 +32,7 @@ npm install -g pm2
 3. Follow the prompts — give your bot a name and username
 4. BotFather will reply with a **bot token** that looks like:
    ```
-   8771463368:AAEco1FGHQvShGKA8P3qn1JvS6j_nlHw_7A
+   1234567890:AAExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
 5. Copy and save this token — you'll need it in Step 3
 
