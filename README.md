@@ -2,6 +2,8 @@
 
 Telegram bot that saves files to your VPS and replies with the path.
 
+![Uploader landing page](assets/preview.png)
+
 ---
 
 ## Before You Start
