@@ -2,7 +2,9 @@
 
 Telegram bot that saves files to your VPS and replies with the path.
 
-🌐 **[cryptopilot.dev/projects/uploader](https://cryptopilot.dev/projects/uploader)**
+🌐 **[cryptopilot.dev/uploader](https://cryptopilot.dev/uploader)**
+
+![Uploader preview](assets/preview.png)
 
 ---
 
