@@ -1,6 +1,6 @@
-# Uploader
+# 📦 Uploader
 
-Telegram bot that saves files to your VPS and replies with the path.
+Save files from Telegram directly to your VPS.
 
 🌐 **[cryptopilot.dev/uploader](https://cryptopilot.dev/uploader)**
 
